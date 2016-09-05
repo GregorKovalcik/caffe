@@ -20,6 +20,10 @@ Both can be disabled by adjusting build variables in `.\windows\CommonSettings.p
 Python support is disabled by default, but can be enabled via `.\windows\CommonSettings.props` as well.
 3rd party dependencies required by Caffe are automatically resolved via NuGet.
 
+This version additionaly removes OpenCV 2.4.10 from NuGet packages.
+You have to install your own version of OpenCV binaries and set the path to the installation directory in `.\windows\CommonSettings.props`.
+This was done to have the latest OpenCV version 3.1.
+
 ### CUDA
 Download `CUDA Toolkit 7.5` [from nVidia website](https://developer.nvidia.com/cuda-toolkit).
 If you don't have CUDA installed, you can experiment with CPU_ONLY build.
@@ -31,6 +35,12 @@ Unpack downloaded zip to %CUDA_PATH% (environment variable set by CUDA installer
 Alternatively, you can unpack zip to any location and set `CuDnnPath` to point to this location in `.\windows\CommonSettings.props`.
 `CuDnnPath` defined in `.\windows\CommonSettings.props`.
 Also, you can disable cuDNN by setting `UseCuDNN` to `false` in the property file.
+
+### OpenCV 3.1
+Download `OpenCV 3.1 for Windows` [from OpenCV website](http://opencv.org/downloads.html).
+Install downloaded file to a folder of your choice and set path to this folder in `.\windows\CommonSettings.props`.
+You may create an environment variable $(OPENCV_DIR) for ease of use.
+Make sure your installed version of OpenCV matches version defined in `.\windows\CommonSettings.props`.
 
 ### Python
 To build Caffe Python wrapper set `PythonSupport` to `true` in `.\windows\CommonSettings.props`.
