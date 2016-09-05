@@ -21,8 +21,16 @@
         <CudaArchitecture>compute_35,sm_35;compute_52,sm_52</CudaArchitecture>
 
         <!-- CuDNN 3 and 4 are supported -->
-        <CuDnnPath></CuDnnPath>
+        <CuDnnPath>$(CUDNN_PATH)</CuDnnPath>
         <ScriptsDir>$(SolutionDir)\scripts</ScriptsDir>
+        
+        <!-- Custom OpenCV -->
+        <!-- NOTE: version number without dots -->
+        <UseCustomOpenCV>true</UseCustomOpenCV>
+        <OpenCVVersion>310</OpenCVVersion>
+        <OpenCVPath>$(OPENCV_DIR)</OpenCVPath>
+        <OpenCVDependencies>opencv_world$(OpenCVVersion).lib</OpenCVDependencies>
+        <OpenCVDependenciesDebug>opencv_world$(OpenCVVersion)d.lib</OpenCVDependenciesDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(CpuOnlyBuild)'=='false'">
         <CudaDependencies>cublas.lib;cuda.lib;curand.lib;cudart.lib</CudaDependencies>
@@ -53,6 +61,10 @@
         <MatlabDir>C:\Program Files\MATLAB\R2014b</MatlabDir>
         <LibraryPath>$(MatlabDir)\extern\lib\win64\microsoft;$(LibraryPath)</LibraryPath>
         <IncludePath>$(MatlabDir)\extern\include;$(IncludePath)</IncludePath>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(UseCustomOpenCV)'=='true'">
+        <LibraryPath>$(OpenCVPath)\x64\vc12\lib;$(LibraryPath)</LibraryPath>
+        <IncludePath>$(OpenCVPath)\include;$(IncludePath)</IncludePath>
     </PropertyGroup>
     <ItemDefinitionGroup Condition="'$(CpuOnlyBuild)'=='true'">
         <ClCompile>
