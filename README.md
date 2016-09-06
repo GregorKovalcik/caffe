@@ -38,8 +38,9 @@ Also, you can disable cuDNN by setting `UseCuDNN` to `false` in the property fil
 
 ### OpenCV 3.1
 Download `OpenCV 3.1 for Windows` [from OpenCV website](http://opencv.org/downloads.html).
-Install downloaded file to a folder of your choice and set path to this folder in `.\windows\CommonSettings.props`.
-You may create an environment variable $(OPENCV_DIR) for ease of use.
+Install downloaded file to a folder.
+Create an environment variable %OPENCV_DIR% and set its value to path to the installed folder "build".
+Add $(OPENCV_DIR)\x64\vc12\bin; to system variable %PATH%.
 Make sure your installed version of OpenCV matches version defined in `.\windows\CommonSettings.props`.
 
 ### Python
