@@ -12,9 +12,9 @@
 
 #include "output_module.hpp"
 
-/** 
+/**
 * @brief Implementation of caffe feature extractor. The features are extracted from
-*       the selected output blobs of the network layers. 
+*       the selected output blobs of the network layers.
 *       The feature can be either returned as a cv:Mat or written directly
 *       to the hard drive using the OutputModule class.
 */
@@ -27,12 +27,12 @@ public:
     * @param trainedFile trained file (trained neuron weights).
     * @param meanFile mean file (mean image of the database the model was trained on).
     */
-	FeatureExtractor(
-		const std::string& modelFile,
-		const std::string& trainedFile,
-		const std::string& meanFile);
+    FeatureExtractor(
+        const std::string& modelFile,
+        const std::string& trainedFile,
+        const std::string& meanFile);
 
-	~FeatureExtractor();
+    ~FeatureExtractor();
 
 
     /**
@@ -130,88 +130,88 @@ public:
     * @param logEveryNth How often should be the info log printed to the console.
     */
     void ExtractFromFileOrFolder(
-		const std::string& inputFileOrFolder,
-		const std::string& outputPath,
+        const std::string& inputFileOrFolder,
+        const std::string& outputPath,
         const std::string& blobNames,
         bool enableTextOutput = true,
-		bool enableImageOutput = false,
-		bool enableXmlOutput = false,
-		int imageMaxHeight = 0,
-		int logEveryNth = 100);
+        bool enableImageOutput = false,
+        bool enableXmlOutput = false,
+        int imageMaxHeight = 0,
+        int logEveryNth = 100);
 
 
-	void EnableTextOutput()
-	{
-		mIsTextOutputEnabled = true;
-	}
-	void DisableTextOutput()
-	{
-		mIsTextOutputEnabled = false;
-	}
-	bool IsTextOutputEnabled()
-	{
-		return mIsTextOutputEnabled;
-	}
+    void EnableTextOutput()
+    {
+        mIsTextOutputEnabled = true;
+    }
+    void DisableTextOutput()
+    {
+        mIsTextOutputEnabled = false;
+    }
+    bool IsTextOutputEnabled()
+    {
+        return mIsTextOutputEnabled;
+    }
 
-	void EnableImageOutput()
-	{
-		mIsImageOutputEnabled = true;
-	}
-	void DisableImageOutput()
-	{
-		mIsImageOutputEnabled = false;
-	}
-	bool IsImageOutputEnabled()
-	{
-		return mIsImageOutputEnabled;
-	}
+    void EnableImageOutput()
+    {
+        mIsImageOutputEnabled = true;
+    }
+    void DisableImageOutput()
+    {
+        mIsImageOutputEnabled = false;
+    }
+    bool IsImageOutputEnabled()
+    {
+        return mIsImageOutputEnabled;
+    }
 
-	void EnableXmlOutput()
-	{
-		mIsXmlOutputEnabled = true;
-	}
-	void DisableXmlOutput()
-	{
-		mIsXmlOutputEnabled = false;
-	}
-	bool IsXmlOutputEnabled()
-	{
-		return mIsXmlOutputEnabled;
-	}
+    void EnableXmlOutput()
+    {
+        mIsXmlOutputEnabled = true;
+    }
+    void DisableXmlOutput()
+    {
+        mIsXmlOutputEnabled = false;
+    }
+    bool IsXmlOutputEnabled()
+    {
+        return mIsXmlOutputEnabled;
+    }
 
-	void SetImageMaxHeight(int maxHeight)
-	{
-		mImageMaxHeight = maxHeight;
-	}
-	int GetImageMaxHeight()
-	{
-		return mImageMaxHeight;
-	}
+    void SetImageMaxHeight(int maxHeight)
+    {
+        mImageMaxHeight = maxHeight;
+    }
+    int GetImageMaxHeight()
+    {
+        return mImageMaxHeight;
+    }
 
-	void SetLogEveryNth(int logEveryNth)
-	{
-		mLogEveryNth = logEveryNth;
-	}
-	int GetLogEveryNth()
-	{
-		return mLogEveryNth;
-	}
+    void SetLogEveryNth(int logEveryNth)
+    {
+        mLogEveryNth = logEveryNth;
+    }
+    int GetLogEveryNth()
+    {
+        return mLogEveryNth;
+    }
 
 private:
-	bool mIsTextOutputEnabled;
-	bool mIsImageOutputEnabled;
-	bool mIsXmlOutputEnabled;
-	int mImageMaxHeight;	    // output images are split into multiple files to fit this height
-	int mLogEveryNth;
+    bool mIsTextOutputEnabled;
+    bool mIsImageOutputEnabled;
+    bool mIsXmlOutputEnabled;
+    int mImageMaxHeight;	    // output images are split into multiple files to fit this height
+    int mLogEveryNth;
 
-	boost::shared_ptr<caffe::Net<float>> mNet;	// Caffe net used to generate and extract features from
-	cv::Size mInputGeometry;					// of the first layer of the network
-	int mNumberOfChannels;						// of the first layer of the network
-	cv::Mat mMean;
-	//std::vector<std::string> mInputFiles;		// preloaded filenames of files to extract features from
-	std::vector<boost::shared_ptr<OutputModule>> mOutputModules;	// used to write extracted features to disk in multiple formats
+    boost::shared_ptr<caffe::Net<float>> mNet;	// Caffe net used to generate and extract features from
+    cv::Size mInputGeometry;					// of the first layer of the network
+    int mNumberOfChannels;						// of the first layer of the network
+    cv::Mat mMean;
+    //std::vector<std::string> mInputFiles;		// preloaded filenames of files to extract features from
+    std::vector<boost::shared_ptr<OutputModule>> mOutputModules;	// used to write extracted features to disk in multiple formats
 
-	
+
     /**
     * @brief Loads the network using model and trained file (network model and weights of its neurons).
     * @param modelFile model file (topological definition of the network).
@@ -219,36 +219,36 @@ private:
     */
     void LoadNetwork(const std::string& modelFile, const std::string& trainedFile);
 
-	/*
+    /*
     * @brief Wrap the input layer of the network in separate Mat objects
-	* (one per channel). This way we save one memcpy operation and we
-	* don't need to rely on cudaMemcpy2D. The last preprocessing
-	* operation will write the separate channels directly to the input
-	* layer.
+    * (one per channel). This way we save one memcpy operation and we
+    * don't need to rely on cudaMemcpy2D. The last preprocessing
+    * operation will write the separate channels directly to the input
+    * layer.
     */
-	void WrapInputLayer(std::vector<cv::Mat>* inputChannels);
+    void WrapInputLayer(std::vector<cv::Mat>* inputChannels);
 
-	/*
+    /*
     * @brief Load the mean file in binaryproto format.
     * @param meanFile mean file (mean image of the database the model was trained on).
     */
-	void LoadMean(const std::string& meanFile);
+    void LoadMean(const std::string& meanFile);
 
-	/*
-    * @brief Parse blob names and create an output module for each blob. 
+    /*
+    * @brief Parse blob names and create an output module for each blob.
     * @param blobNames Names of blobs to extract, delimited by comma ("blob1,blob2,blob3").
     * @param outputPath Output path. The filename will be appended by the blob name identifier "_blobName".
     *       Also the output module appends the identifier of an output method.
     */
     void LoadOutputModules(const std::string& blobNames, const std::string& outputPath);
 
-	/*
+    /*
     * @brief Resize, convert to the correct image format and write to the first layer of the network.
     * @param image Image to be preprocessed and written to the first layer of the network.
     * @param inputChannels cv::Mat wrapping memory data of the first network layer.
     *       Writing to this cv::Mat, one will write to the first layer directly.
     */
-	void Preprocess(const cv::Mat& image, std::vector<cv::Mat>* inputChannels);
+    void Preprocess(const cv::Mat& image, std::vector<cv::Mat>* inputChannels);
 
     /*
     * @brief Processes the image.

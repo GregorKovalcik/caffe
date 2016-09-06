@@ -6,16 +6,16 @@
 */
 struct ImageInfo
 {
-	int id;
-	int classId;
-	bool isQuery;
-	int classCount;
-	double distance = -1;
+    int id;
+    int classId;
+    bool isQuery;
+    int classCount;
+    double distance = -1;
 
-	bool operator < (const ImageInfo& imageInfo) const
-	{
-		return (distance < imageInfo.distance);
-	}
+    bool operator < (const ImageInfo& imageInfo) const
+    {
+        return (distance < imageInfo.distance);
+    }
 };
 
 #endif

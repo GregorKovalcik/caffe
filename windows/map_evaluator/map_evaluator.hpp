@@ -36,13 +36,13 @@ public:
         mTopK(0),
         mDistanceFunction(L2),
         mDistanceFunctionParameter(0)
-	{
-		LoadFeatures(featuresFile);
-		ParseAnnotationFile(annotationFile);
+    {
+        LoadFeatures(featuresFile);
+        ParseAnnotationFile(annotationFile);
 
-		CHECK_EQ(mFeatures.rows, mImageInfos.size())
-			<< "Number of loaded features and number of images in the annotation file are not equal!";
-	}
+        CHECK_EQ(mFeatures.rows, mImageInfos.size())
+            << "Number of loaded features and number of images in the annotation file are not equal!";
+    }
 
     /**
     * @brief Launches the evaluation on preloaded data.
@@ -54,48 +54,48 @@ public:
     * @param distanceFunction Distance function selector.
     */
     void SetDistanceFunction(DistanceFunction distanceFunction)
-	{
-		mDistanceFunction = distanceFunction;
-	}
+    {
+        mDistanceFunction = distanceFunction;
+    }
 
     /**
     * @brief Set optional parameter of distance measurement.
     * @param parameter Parameter of the distance function.
     */
     void SetDistanceFunctionParameter(double parameter)
-	{
-		mDistanceFunctionParameter = parameter;
-	}
+    {
+        mDistanceFunctionParameter = parameter;
+    }
 
     /**
     * @brief Query only for top K results.
     * @param topK Number of results to use in MAP evaluation.
     */
     void SetTopK(int topK)
-	{
-		mTopK = topK;
-	}
+    {
+        mTopK = topK;
+    }
 
     /**
     * @brief Whether is the query feature excluded from results.
     * @param topK Number of results to use in MAP evaluation.
     */
     void SetExcludeQueryFromResults(bool excludeQueryFromResults)
-	{
-		mExcludeQueryFromDB = excludeQueryFromResults;
-	}
+    {
+        mExcludeQueryFromDB = excludeQueryFromResults;
+    }
 
-	// TODO: get MAP graph
+    // TODO: get MAP graph
 
 private:
-	cv::Mat mFeatures;
-	std::vector<ImageInfo> mImageInfos;
-	std::vector<ImageInfo> mQueryInfos;
-	
-	bool mExcludeQueryFromDB;
-	int mTopK;
-	DistanceFunction mDistanceFunction;
-	double mDistanceFunctionParameter;
+    cv::Mat mFeatures;
+    std::vector<ImageInfo> mImageInfos;
+    std::vector<ImageInfo> mQueryInfos;
+
+    bool mExcludeQueryFromDB;
+    int mTopK;
+    DistanceFunction mDistanceFunction;
+    double mDistanceFunctionParameter;
 
     /**
     * @brief Load features stored as cv::Mat in a XML file, under identifier XML_MAT_IDENTIFIER
@@ -116,9 +116,9 @@ private:
     * @param precisionRecallValues Output vector, where P-R values will be stored (used for drawing a P-R graph).
     */
     double EvaluateAveragePrecision(
-		const ImageInfo& query, 
-		const std::vector<ImageInfo>& sortedImages,
-		std::vector<std::pair<double, double>>& precisionRecallValues);
+        const ImageInfo& query,
+        const std::vector<ImageInfo>& sortedImages,
+        std::vector<std::pair<double, double>>& precisionRecallValues);
 
     /**
     * @brief Compute distance between two features.
@@ -134,4 +134,3 @@ private:
 
 
 #endif
-

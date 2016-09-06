@@ -8,11 +8,11 @@ namespace fs = boost::filesystem;
 
 FeatureExtractor::FeatureExtractor(
     const string& modelFile,
-	const string& trainedFile,
-	const string& meanFile)
+    const string& trainedFile,
+    const string& meanFile)
 {
-	LoadNetwork(modelFile, trainedFile);
-	LoadMean(meanFile);
+    LoadNetwork(modelFile, trainedFile);
+    LoadMean(meanFile);
 }
 
 FeatureExtractor::~FeatureExtractor()
@@ -67,9 +67,9 @@ void FeatureExtractor::ExtractFromStream(
     mIsXmlOutputEnabled = enableXmlOutput;
     mImageMaxHeight = imageMaxHeight;
     mLogEveryNth = logEveryNth;
-    
+
     LoadOutputModules(blobNames, outputPath);
-    
+
     fs::path folder(inputFolder);
     fs::directory_iterator endIterator;
 
@@ -150,44 +150,44 @@ void FeatureExtractor::ExtractFromFileList(
 
 
 void FeatureExtractor::ExtractFromFileOrFolder(
-	const string& inputFileOrFolder,
-	const string& outputPath,
+    const string& inputFileOrFolder,
+    const string& outputPath,
     const string& blobNames,
     bool enableTextOutput,
-	bool enableImageOutput,
-	bool enableXmlOutput,
-	int imageMaxHeight,
-	int logEveryNth)
+    bool enableImageOutput,
+    bool enableXmlOutput,
+    int imageMaxHeight,
+    int logEveryNth)
 {
-	mIsTextOutputEnabled = enableTextOutput; 
-	mIsImageOutputEnabled = enableImageOutput;
-	mIsXmlOutputEnabled = enableXmlOutput;
-	mImageMaxHeight = imageMaxHeight;
-	mLogEveryNth = logEveryNth;
+    mIsTextOutputEnabled = enableTextOutput;
+    mIsImageOutputEnabled = enableImageOutput;
+    mIsXmlOutputEnabled = enableXmlOutput;
+    mImageMaxHeight = imageMaxHeight;
+    mLogEveryNth = logEveryNth;
 
-	LoadOutputModules(blobNames, outputPath);
-    
+    LoadOutputModules(blobNames, outputPath);
+
     double timeStart, timeElapsed;
     LOG(INFO) << "Loading input directory...";
     timeStart = (double)getTickCount();
 
     fs::path inputPath(inputFileOrFolder);
     fs::directory_iterator endIterator;
-    
+
     CHECK(fs::exists(inputPath))
-    	<< "Path not found: " << inputPath;
-    
+        << "Path not found: " << inputPath;
+
     CHECK(fs::is_directory(inputPath) || fs::is_regular_file(inputPath))
-    	<< "Path is not directory, nor a regular file: " << inputPath;
-    
+        << "Path is not directory, nor a regular file: " << inputPath;
+
     Mat image;
     int processedCount = 0;
     if (fs::is_directory(inputPath))
     {
-    	for (fs::directory_iterator directoryIterator(inputPath); directoryIterator != endIterator; directoryIterator++)
-    	{
-    		if (fs::is_regular_file(directoryIterator->status()))
-    		{
+        for (fs::directory_iterator directoryIterator(inputPath); directoryIterator != endIterator; directoryIterator++)
+        {
+            if (fs::is_regular_file(directoryIterator->status()))
+            {
                 const string& file = directoryIterator->path().string();
                 image = imread(file);
                 if (image.empty())
@@ -206,8 +206,8 @@ void FeatureExtractor::ExtractFromFileOrFolder(
                     LOG_EVERY_N(INFO, mLogEveryNth) << google::COUNTER << " processed.";
                     processedCount++;
                 }
-    		}
-    	}
+            }
+        }
     }
     else if (fs::is_regular_file(inputPath))
     {
@@ -242,167 +242,167 @@ void FeatureExtractor::ExtractFromFileOrFolder(
 
 void FeatureExtractor::LoadNetwork(const string& modelFile, const string& trainedFile)
 {
-	double timeStart, timeElapsed;
+    double timeStart, timeElapsed;
 
-	LOG(INFO) << "Loading network file...";
-	timeStart = (double)getTickCount();
+    LOG(INFO) << "Loading network file...";
+    timeStart = (double)getTickCount();
 
-	mNet.reset(new Net<float>(modelFile, TEST));
-	mNet->CopyTrainedLayersFrom(trainedFile);
+    mNet.reset(new Net<float>(modelFile, TEST));
+    mNet->CopyTrainedLayersFrom(trainedFile);
 
-	CHECK_EQ(mNet->num_inputs(), 1)
-		<< "Network should have exactly one input.";
-	CHECK_EQ(mNet->num_outputs(), 1)
-		<< "Network should have exactly one output.";
+    CHECK_EQ(mNet->num_inputs(), 1)
+        << "Network should have exactly one input.";
+    CHECK_EQ(mNet->num_outputs(), 1)
+        << "Network should have exactly one output.";
 
-	Blob<float>* inputLayer = mNet->input_blobs()[0];
-	mNumberOfChannels = inputLayer->channels();
-	CHECK(mNumberOfChannels == 3 || mNumberOfChannels == 1)
-		<< "Input layer should have 1 or 3 channels.";
-	mInputGeometry = Size(inputLayer->width(), inputLayer->height());
+    Blob<float>* inputLayer = mNet->input_blobs()[0];
+    mNumberOfChannels = inputLayer->channels();
+    CHECK(mNumberOfChannels == 3 || mNumberOfChannels == 1)
+        << "Input layer should have 1 or 3 channels.";
+    mInputGeometry = Size(inputLayer->width(), inputLayer->height());
 
-	inputLayer->Reshape(1, mNumberOfChannels, mInputGeometry.height, mInputGeometry.width);
-	/* Forward dimension change to all layers. */
-	mNet->Reshape();
+    inputLayer->Reshape(1, mNumberOfChannels, mInputGeometry.height, mInputGeometry.width);
+    /* Forward dimension change to all layers. */
+    mNet->Reshape();
 
-	timeElapsed = ((double)getTickCount() - timeStart) / getTickFrequency();
-	LOG(INFO) << "Network file loaded in " << timeElapsed << " seconds.";
+    timeElapsed = ((double)getTickCount() - timeStart) / getTickFrequency();
+    LOG(INFO) << "Network file loaded in " << timeElapsed << " seconds.";
 }
 
 
 void FeatureExtractor::WrapInputLayer(vector<Mat>* inputChannels)
 {
-	Blob<float>* inputLayer = mNet->input_blobs()[0];
+    Blob<float>* inputLayer = mNet->input_blobs()[0];
 
-	int width = inputLayer->width();
-	int height = inputLayer->height();
-	float* inputData = inputLayer->mutable_cpu_data();
-	for (int i = 0; i < inputLayer->channels(); ++i)
-	{
-		Mat channel(height, width, CV_32FC1, inputData);
-		inputChannels->push_back(channel);
-		inputData += width * height;
-	}
+    int width = inputLayer->width();
+    int height = inputLayer->height();
+    float* inputData = inputLayer->mutable_cpu_data();
+    for (int i = 0; i < inputLayer->channels(); ++i)
+    {
+        Mat channel(height, width, CV_32FC1, inputData);
+        inputChannels->push_back(channel);
+        inputData += width * height;
+    }
 }
 
 
 void FeatureExtractor::LoadMean(const string& meanFile)
 {
-	double timeStart, timeElapsed;
+    double timeStart, timeElapsed;
 
-	LOG(INFO) << "Loading mean file...";
-	timeStart = (double)getTickCount();
+    LOG(INFO) << "Loading mean file...";
+    timeStart = (double)getTickCount();
 
-	BlobProto blobProto;
-	ReadProtoFromBinaryFileOrDie(meanFile.c_str(), &blobProto);
+    BlobProto blobProto;
+    ReadProtoFromBinaryFileOrDie(meanFile.c_str(), &blobProto);
 
-	/* Convert from BlobProto to Blob<float> */
-	Blob<float> meanBlob;
-	meanBlob.FromProto(blobProto);
-	CHECK_EQ(meanBlob.channels(), mNumberOfChannels)
-		<< "Number of channels of mean file doesn't match input layer.";
+    /* Convert from BlobProto to Blob<float> */
+    Blob<float> meanBlob;
+    meanBlob.FromProto(blobProto);
+    CHECK_EQ(meanBlob.channels(), mNumberOfChannels)
+        << "Number of channels of mean file doesn't match input layer.";
 
-	/* The format of the mean file is planar 32-bit float BGR or grayscale. */
-	std::vector<Mat> channels;
-	float* data = meanBlob.mutable_cpu_data();
-	for (int i = 0; i < mNumberOfChannels; i++)
-	{
-		/* Extract an individual channel. */
-		Mat channel(meanBlob.height(), meanBlob.width(), CV_32FC1, data);
-		channels.push_back(channel);
-		data += meanBlob.height() * meanBlob.width();
-	}
+    /* The format of the mean file is planar 32-bit float BGR or grayscale. */
+    std::vector<Mat> channels;
+    float* data = meanBlob.mutable_cpu_data();
+    for (int i = 0; i < mNumberOfChannels; i++)
+    {
+        /* Extract an individual channel. */
+        Mat channel(meanBlob.height(), meanBlob.width(), CV_32FC1, data);
+        channels.push_back(channel);
+        data += meanBlob.height() * meanBlob.width();
+    }
 
-	/* Merge the separate channels into a single image. */
-	merge(channels, mMean);
+    /* Merge the separate channels into a single image. */
+    merge(channels, mMean);
 
-	/* Compute the global mean pixel value and create a mean image
-	 * filled with this value. */
-	Scalar channelMean = cv::mean(mMean);
-	mMean = Mat(mInputGeometry, mMean.type(), channelMean);
+    /* Compute the global mean pixel value and create a mean image
+     * filled with this value. */
+    Scalar channelMean = cv::mean(mMean);
+    mMean = Mat(mInputGeometry, mMean.type(), channelMean);
 
-	timeElapsed = ((double)getTickCount() - timeStart) / getTickFrequency();
-	LOG(INFO) << "Mean file loaded in " << timeElapsed << " seconds.";
+    timeElapsed = ((double)getTickCount() - timeStart) / getTickFrequency();
+    LOG(INFO) << "Mean file loaded in " << timeElapsed << " seconds.";
 }
 
 
 void FeatureExtractor::LoadOutputModules(const string& blobNames, const string& outputPath)
 {
-	double timeStart, timeElapsed;
+    double timeStart, timeElapsed;
 
-	LOG(INFO) << "Loading blob names...";
-	timeStart = (double)getTickCount();
+    LOG(INFO) << "Loading blob names...";
+    timeStart = (double)getTickCount();
 
-	vector<std::string> blobNamesSeparated;
-	split(blobNamesSeparated, blobNames, boost::is_any_of(","));
+    vector<std::string> blobNamesSeparated;
+    split(blobNamesSeparated, blobNames, boost::is_any_of(","));
 
-	size_t numberOfFeatures = blobNamesSeparated.size();
-	for (size_t i = 0; i < numberOfFeatures; i++)
-	{
-		mOutputModules.push_back(boost::make_shared<OutputModule>(mNet, fs::path(outputPath), blobNamesSeparated[i],
-			mIsTextOutputEnabled, mIsImageOutputEnabled, mIsXmlOutputEnabled, mImageMaxHeight));
-	}
+    size_t numberOfFeatures = blobNamesSeparated.size();
+    for (size_t i = 0; i < numberOfFeatures; i++)
+    {
+        mOutputModules.push_back(boost::make_shared<OutputModule>(mNet, fs::path(outputPath), blobNamesSeparated[i],
+            mIsTextOutputEnabled, mIsImageOutputEnabled, mIsXmlOutputEnabled, mImageMaxHeight));
+    }
 
-	timeElapsed = ((double)getTickCount() - timeStart) / getTickFrequency();
-	LOG(INFO) << "Blob names loaded in " << timeElapsed << " seconds. Loaded names are: " << blobNames;
+    timeElapsed = ((double)getTickCount() - timeStart) / getTickFrequency();
+    LOG(INFO) << "Blob names loaded in " << timeElapsed << " seconds. Loaded names are: " << blobNames;
 }
 
 
 void FeatureExtractor::Preprocess(const Mat& image, vector<Mat>* inputChannels)
 {
-	/* Convert the input image to the input image format of the network. */
-	Mat sample;
-	if (image.channels() == 3 && mNumberOfChannels == 1)
-	{
-		cvtColor(image, sample, CV_BGR2GRAY);
-	}
-	else if (image.channels() == 4 && mNumberOfChannels == 1)
-	{
-		cvtColor(image, sample, CV_BGRA2GRAY);
-	}
-	else if (image.channels() == 4 && mNumberOfChannels == 3)
-	{
-		cvtColor(image, sample, CV_BGRA2BGR);
-	}
-	else if (image.channels() == 1 && mNumberOfChannels == 3)
-	{
-		cvtColor(image, sample, CV_GRAY2BGR);
-	}
-	else
-	{
-		sample = image;
-	}
+    /* Convert the input image to the input image format of the network. */
+    Mat sample;
+    if (image.channels() == 3 && mNumberOfChannels == 1)
+    {
+        cvtColor(image, sample, CV_BGR2GRAY);
+    }
+    else if (image.channels() == 4 && mNumberOfChannels == 1)
+    {
+        cvtColor(image, sample, CV_BGRA2GRAY);
+    }
+    else if (image.channels() == 4 && mNumberOfChannels == 3)
+    {
+        cvtColor(image, sample, CV_BGRA2BGR);
+    }
+    else if (image.channels() == 1 && mNumberOfChannels == 3)
+    {
+        cvtColor(image, sample, CV_GRAY2BGR);
+    }
+    else
+    {
+        sample = image;
+    }
 
-	Mat sampleResized;
-	if (sample.size() != mInputGeometry)
-	{
-		resize(sample, sampleResized, mInputGeometry);
-	}
-	else
-	{
-		sampleResized = sample;
-	}
+    Mat sampleResized;
+    if (sample.size() != mInputGeometry)
+    {
+        resize(sample, sampleResized, mInputGeometry);
+    }
+    else
+    {
+        sampleResized = sample;
+    }
 
-	Mat sampleFloat;
-	if (mNumberOfChannels == 3)
-	{
-		sampleResized.convertTo(sampleFloat, CV_32FC3);
-	}
-	else
-	{
-		sampleResized.convertTo(sampleFloat, CV_32FC1);
-	}
+    Mat sampleFloat;
+    if (mNumberOfChannels == 3)
+    {
+        sampleResized.convertTo(sampleFloat, CV_32FC3);
+    }
+    else
+    {
+        sampleResized.convertTo(sampleFloat, CV_32FC1);
+    }
 
-	Mat sampleNormalized;
-	subtract(sampleFloat, mMean, sampleNormalized);
+    Mat sampleNormalized;
+    subtract(sampleFloat, mMean, sampleNormalized);
 
-	/* This operation will write the separate BGR planes directly to the
-	* input layer of the network because it is wrapped by the Mat
-	* objects in input_channels. */
-	split(sampleNormalized, *inputChannels);
+    /* This operation will write the separate BGR planes directly to the
+    * input layer of the network because it is wrapped by the Mat
+    * objects in input_channels. */
+    split(sampleNormalized, *inputChannels);
 
-	CHECK(reinterpret_cast<float*>(inputChannels->at(0).data) == mNet->input_blobs()[0]->cpu_data())
-		<< "Input channels are not wrapping the input layer of the network.";
+    CHECK(reinterpret_cast<float*>(inputChannels->at(0).data) == mNet->input_blobs()[0]->cpu_data())
+        << "Input channels are not wrapping the input layer of the network.";
 }
 
 
@@ -428,4 +428,3 @@ void FeatureExtractor::CloseOutputModules()
     timeElapsed = ((double)getTickCount() - timeStart) / getTickFrequency();
     LOG(INFO) << "Output modules closed in " << timeElapsed << " seconds.\n";
 }
-

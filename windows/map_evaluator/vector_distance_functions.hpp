@@ -8,7 +8,7 @@
 */
 enum DistanceFunction
 {
-	L2, L2Squared, L1, Infinity, 
+    L2, L2Squared, L1, Infinity,
     Cosine, Hamming, MaximalDimensionDifference
 };
 
@@ -45,7 +45,7 @@ inline double hamming(const cv::Mat& a, const cv::Mat& b)
 }
 
 /**
-* @brief Finds the index with maximal value in vector A and then computes difference 
+* @brief Finds the index with maximal value in vector A and then computes difference
 *       between the values of both vectors on this index.
 *       Used on features generated from a probability layer.
 *       Index of the maximal value in A is ID of the most likely class of the image A.
@@ -53,11 +53,11 @@ inline double hamming(const cv::Mat& a, const cv::Mat& b)
 */
 inline double maximalDimensionDifference(const cv::Mat& a, const cv::Mat& b)
 {
-	double min, max;
-	cv::Point minIdx, maxIdx;
-	cv::minMaxLoc(a, &min, &max, &minIdx, &maxIdx);
+    double min, max;
+    cv::Point minIdx, maxIdx;
+    cv::minMaxLoc(a, &min, &max, &minIdx, &maxIdx);
 
-	return std::abs(a.at<float>(maxIdx.x) - b.at<float>(maxIdx.x));
+    return std::abs(a.at<float>(maxIdx.x) - b.at<float>(maxIdx.x));
 }
 
 

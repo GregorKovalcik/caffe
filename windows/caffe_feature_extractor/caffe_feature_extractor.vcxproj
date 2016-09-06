@@ -31,16 +31,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 7.5.props" />
     <Import Project="..\..\..\NugetPackages\gflags.2.1.2.1\build\native\gflags.props" />
     <Import Project="..\..\..\NugetPackages\glog.0.3.3.0\build\native\glog.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\CommonSettings.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\CommonSettings.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -95,7 +92,6 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 7.5.targets" />
     <Import Project="..\..\..\NugetPackages\OpenBLAS.0.2.14.1\build\native\openblas.targets" />
     <Import Project="..\..\..\NugetPackages\hdf5-v120-complete.1.8.15.2\build\native\hdf5-v120.targets" />
     <Import Project="..\..\..\NugetPackages\boost.1.59.0.0\build\native\boost.targets" />
