@@ -18,4 +18,6 @@
 #include "caffe/util/io.hpp"
 #include "caffe/util/upgrade_proto.hpp"
 
+#include "caffe/caffe_feature_extractor_lib/caffe_feature_extractor_lib.hpp"
+
 #endif  // CAFFE_CAFFE_HPP_
