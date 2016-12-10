@@ -58,9 +58,7 @@
       <AdditionalDependencies>libcaffe.lib;caffe_feature_extractor_lib.lib;$(OpenCVDependenciesDebug);$(CudaDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /D /Y "$(TargetPath)" "$(ProjectDir)..\..\..\blazek-videohunter\caffe\"
-xcopy /D /Y "$(TargetDir)caffe_feature_extractor_lib.lib" "$(ProjectDir)..\..\..\blazek-videohunter\caffe\"
-xcopy /D /Y "$(TargetDir)libcaffe.lib" "$(ProjectDir)..\..\..\blazek-videohunter\caffe\"</Command>
+      <Command>xcopy /D /Y "$(TargetPath)" "$(ProjectDir)..\..\..\blazek-videohunter\caffe\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -74,9 +72,7 @@ xcopy /D /Y "$(TargetDir)libcaffe.lib" "$(ProjectDir)..\..\..\blazek-videohunter
       <AdditionalDependencies>libcaffe.lib;caffe_feature_extractor_lib.lib;$(OpenCVDependencies);$(CudaDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /D /Y "$(TargetPath)" "$(ProjectDir)..\..\..\blazek-videohunter\caffe\"
-xcopy /D /Y "$(TargetDir)caffe_feature_extractor_lib.lib" "$(ProjectDir)..\..\..\blazek-videohunter\caffe\"
-xcopy /D /Y "$(TargetDir)libcaffe.lib" "$(ProjectDir)..\..\..\blazek-videohunter\caffe\"</Command>
+      <Command>xcopy /D /Y "$(TargetPath)" "$(ProjectDir)..\..\..\blazek-videohunter\caffe\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
