@@ -15,17 +15,21 @@ FeatureExtractor::FeatureExtractor(
     LoadMean(meanFile);
 }
 
+
 FeatureExtractor::~FeatureExtractor()
 {
 }
 
 
-Mat FeatureExtractor::ExtractFromImage(const Mat& image, const string& blobName)
+void FeatureExtractor::ForwardImage(const Mat& image)
 {
+    //LOG(INFO)
+    //    << "Passing image forward through the network...";
+
     if (image.empty())
     {
-        LOG(ERROR) << "Unable to decode image.";
-        return Mat();
+        LOG(ERROR) << "The input image is empty!";
+        return;
     }
     else
     {
@@ -34,20 +38,36 @@ Mat FeatureExtractor::ExtractFromImage(const Mat& image, const string& blobName)
         Preprocess(image, &inputChannels);
         mNet->Forward();
 
-        CHECK(mNet->has_blob(blobName))
-            << "Unknown feature blob name: " << blobName;
-        boost::shared_ptr<Blob<float>> blob = mNet->blob_by_name(blobName);
-
-        Mat featureImage(1, blob->num() * blob->channels() * blob->width() * blob->height(),
-            CV_32FC1, blob->data()->mutable_cpu_data());
-
-        // when returning as a vector:
-        //const float* begin = (float*)blob->data()->cpu_data();
-        //const float* end = begin + (blob->num() * blob->channels() * blob->width() * blob->height());
-        //vector<float> feature(begin, end);
-
-        return featureImage;
+        //LOG_EVERY_N(INFO, mLogEveryNth) << google::COUNTER << " processed.";
     }
+}
+
+
+Mat FeatureExtractor::ExtractFeatures(const string& blobName)
+{
+    //LOG(INFO)
+    //    << "Extracting feature from blob " << blobName;
+
+    CHECK(mNet->has_blob(blobName))
+        << "Unknown feature blob name: " << blobName;
+    boost::shared_ptr<Blob<float>> blob = mNet->blob_by_name(blobName);
+
+    Mat featureImage(1, blob->num() * blob->channels() * blob->width() * blob->height(),
+        CV_32FC1, blob->data()->mutable_cpu_data());
+
+    // when returning as a vector:
+    //const float* begin = (float*)blob->data()->cpu_data();
+    //const float* end = begin + (blob->num() * blob->channels() * blob->width() * blob->height());
+    //vector<float> feature(begin, end);
+
+    return featureImage;
+}
+
+
+Mat FeatureExtractor::ExtractFromImage(const Mat& image, const string& blobName)
+{
+    ForwardImage(image);
+    return ExtractFeatures(blobName);
 }
 
 

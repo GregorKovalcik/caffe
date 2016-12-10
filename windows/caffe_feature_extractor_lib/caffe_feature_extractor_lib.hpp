@@ -34,6 +34,20 @@ public:
 
     ~FeatureExtractor();
 
+    /**
+    * @brief Passes forward an image throught the network.
+    * @param image Input image of CV_8U type.
+    */
+    void ForwardImage(const cv::Mat& image);
+
+
+    /**
+    * @brief Extracts features from a blob.
+    * @param blobName Name of the blob to extract the features from.
+    * @returns cv::Mat of type CV_32F and dimensions 1x[feature_size] - one feature per column.
+    */
+    cv::Mat ExtractFeatures(const std::string& blobName);
+
 
     /**
     * @brief Extracts features from a blob after forwarding the input image
