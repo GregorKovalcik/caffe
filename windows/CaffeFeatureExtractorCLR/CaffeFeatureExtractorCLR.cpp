@@ -29,9 +29,20 @@ namespace CaffeFeatureExtractorCLR
         caffe::Caffe::set_mode(caffe::Caffe::CPU);
     }
 
+    int CaffeFeatureExtractor::GetInputWidth()
+    {
+        return mFeatureExtractor->GetInputSize().width;
+    }
+
+    int CaffeFeatureExtractor::GetInputHeight()
+    {
+        return mFeatureExtractor->GetInputSize().height;
+    }
+
     void CaffeFeatureExtractor::ForwardImage(Bitmap^ image)
     {
-        mFeatureExtractor->ForwardImage(ConvertBitmapToMat(image));
+        Bitmap^ resized = gcnew Bitmap(image, GetInputWidth(), GetInputHeight());
+        mFeatureExtractor->ForwardImage(ConvertBitmapToMat(resized));
     }
 
     array<float>^ CaffeFeatureExtractor::ExtractFeatures(String^ blobName)
@@ -71,7 +82,7 @@ namespace CaffeFeatureExtractorCLR
                 mat.cols,
                 mat.rows,
                 mat.step,
-                System::Drawing::Imaging::PixelFormat::Format32bppRgb,
+                System::Drawing::Imaging::PixelFormat::Format32bppArgb,
                 IntPtr(mat.data));
         default:
             throw gcnew System::Exception(gcnew System::String("Unsupported bitmap format!"));
@@ -97,7 +108,8 @@ namespace CaffeFeatureExtractorCLR
             iplImage = cvCreateImage(cvSize(bitmap->Width, bitmap->Height), IPL_DEPTH_8U, 3);
             iplImage->imageData = (char*)bitmapData->Scan0.ToPointer();
         }
-        else if (bitmap->PixelFormat == PixelFormat::Format32bppRgb)
+        else if (bitmap->PixelFormat == PixelFormat::Format32bppRgb
+            || bitmap->PixelFormat == PixelFormat::Format32bppArgb)
         {
             iplImage = cvCreateImage(cvSize(bitmap->Width, bitmap->Height), IPL_DEPTH_8U, 4);
             iplImage->imageData = (char*)bitmapData->Scan0.ToPointer();
