@@ -51,16 +51,16 @@ namespace cli_test
                     {
                         //Bitmap bitmap = (Bitmap)Image.FromFile(iStable + ".bmp");
                         float[] feature = ParseFeature(bitmaps[iStable]);
-                        //Console.WriteLine("Thread " + iStable + ": "
-                        //    + feature[0] + ", "
-                        //    + feature[1] + ", "
-                        //    + feature[2] + ", "
-                        //    + feature[3] + ", "
-                        //    + feature[4] + ", "
-                        //    + feature[5] + ", "
-                        //    + feature[6] + ", "
-                        //    + feature[7] + ", "
-                        //    + feature[8]);
+                        Console.WriteLine("Thread " + iStable + ": "
+                            + feature[0] + ", "
+                            + feature[1] + ", "
+                            + feature[2] + ", "
+                            + feature[3] + ", "
+                            + feature[4] + ", "
+                            + feature[5] + ", "
+                            + feature[6] + ", "
+                            + feature[7] + ", "
+                            + feature[8]);
                     }
                 });
                 threads[iStable].Start();
