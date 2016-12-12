@@ -35,6 +35,12 @@ public:
     ~FeatureExtractor();
 
     /**
+    * @brief Returns the dimensions of the input image
+    */
+    cv::Size GetInputSize();
+
+
+    /**
     * @brief Passes forward an image throught the network.
     * @param image Input image of CV_8U type.
     */

@@ -32,6 +32,9 @@ namespace CaffeFeatureExtractorCLR
         void SetModeGPU();
         void SetModeCPU();
 
+        int GetInputWidth();
+        int GetInputHeight();
+
         void ForwardImage(Bitmap^ image);
         array<float>^ ExtractFeatures(String^ blobName);
         array<float>^ ExtractFromImage(Bitmap^ image, String^ blobName);

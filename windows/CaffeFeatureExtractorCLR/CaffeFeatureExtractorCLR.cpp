@@ -29,9 +29,20 @@ namespace CaffeFeatureExtractorCLR
         caffe::Caffe::set_mode(caffe::Caffe::CPU);
     }
 
+    int CaffeFeatureExtractor::GetInputWidth()
+    {
+        return mFeatureExtractor->GetInputSize().width;
+    }
+
+    int CaffeFeatureExtractor::GetInputHeight()
+    {
+        return mFeatureExtractor->GetInputSize().height;
+    }
+
     void CaffeFeatureExtractor::ForwardImage(Bitmap^ image)
     {
-        mFeatureExtractor->ForwardImage(ConvertBitmapToMat(image));
+        Bitmap^ resized = gcnew Bitmap(image, GetInputWidth(), GetInputHeight());
+        mFeatureExtractor->ForwardImage(ConvertBitmapToMat(resized));
     }
 
     array<float>^ CaffeFeatureExtractor::ExtractFeatures(String^ blobName)
