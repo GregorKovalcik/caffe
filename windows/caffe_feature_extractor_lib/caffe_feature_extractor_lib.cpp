@@ -20,6 +20,11 @@ FeatureExtractor::~FeatureExtractor()
 {
 }
 
+cv::Size FeatureExtractor::GetInputSize()
+{
+    return mInputGeometry;
+}
+
 
 void FeatureExtractor::ForwardImage(const Mat& image)
 {
@@ -393,24 +398,24 @@ void FeatureExtractor::Preprocess(const Mat& image, vector<Mat>* inputChannels)
         sample = image;
     }
 
-    Mat sampleResized;
-    if (sample.size() != mInputGeometry)
-    {
-        resize(sample, sampleResized, mInputGeometry);
-    }
-    else
-    {
-        sampleResized = sample;
-    }
+    //Mat sampleResized;
+    //if (sample.size() != mInputGeometry)
+    //{
+    //    resize(sample, sampleResized, mInputGeometry);
+    //}
+    //else
+    //{
+    //    sampleResized = sample;
+    //}
 
     Mat sampleFloat;
     if (mNumberOfChannels == 3)
     {
-        sampleResized.convertTo(sampleFloat, CV_32FC3);
+        sample.convertTo(sampleFloat, CV_32FC3);
     }
     else
     {
-        sampleResized.convertTo(sampleFloat, CV_32FC1);
+        sample.convertTo(sampleFloat, CV_32FC1);
     }
 
     Mat sampleNormalized;
