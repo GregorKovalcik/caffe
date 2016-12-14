@@ -9,8 +9,6 @@ namespace CaffeFeatureExtractorCLR
             marshal_as<std::string>(modelFile),
             marshal_as<std::string>(trainedFile),
             marshal_as<std::string>(meanFile));
-
-        SetModeGPU();
     }
 
     CaffeFeatureExtractor::~CaffeFeatureExtractor()
