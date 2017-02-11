@@ -2,7 +2,6 @@
 
 namespace CaffeFeatureExtractorCLR
 {
-
     CaffeFeatureExtractor::CaffeFeatureExtractor(String^ modelFile, String^ trainedFile, String^ meanFile)
     {
         mFeatureExtractor = new FeatureExtractor(
@@ -41,7 +40,15 @@ namespace CaffeFeatureExtractorCLR
 
     void CaffeFeatureExtractor::ForwardImage(Bitmap^ image)
     {
-        Bitmap^ resized = gcnew Bitmap(image, GetInputWidth(), GetInputHeight());
+        Bitmap^ resized = image;
+        if (image == nullptr)
+        {
+            throw gcnew System::Exception(gcnew System::String("Bitmap is a null pointer!"));
+        }
+        else if (image->Width != GetInputWidth() || image->Height != GetInputHeight())
+        {
+            resized = gcnew Bitmap(image, GetInputWidth(), GetInputHeight());
+        }
         mFeatureExtractor->ForwardImage(ConvertBitmapToMat(resized));
     }
 
@@ -85,7 +92,7 @@ namespace CaffeFeatureExtractorCLR
                 System::Drawing::Imaging::PixelFormat::Format32bppArgb,
                 IntPtr(mat.data));
         default:
-            throw gcnew System::Exception(gcnew System::String("Unsupported bitmap format!"));
+            throw gcnew System::Exception(gcnew System::String("Unsupported cv::Mat format!"));
         }
     }
 
