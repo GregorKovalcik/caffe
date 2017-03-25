@@ -13,11 +13,13 @@ OutputModule::OutputModule(
     bool enableTextOutput,
     bool enableImageOutput,
     bool enableXmlOutput,
-    int numberOfImageRows)
+    int numberOfImageRows,
+    bool enableKernelMaxPooling)
     : mIsTextOutputEnabled(enableTextOutput),
     mIsImageOutputEnabled(enableImageOutput),
     mIsXMLOutputEnabled(enableXmlOutput),
-    mImageMaxHeight(numberOfImageRows)
+    mImageMaxHeight(numberOfImageRows),
+    mIsKernelMaxPoolingEnabled(enableKernelMaxPooling)
 {
     // check and prepare blob
     CHECK(net->has_blob(blobName))
@@ -132,9 +134,29 @@ void OutputModule::WriteText(const string& inputFilename)
         vector<float> feature(begin, end);
 
         mOutputStream << inputFilename << ":";
-        for (size_t i = 0; i < feature.size(); ++i)
+
+        if (mIsKernelMaxPoolingEnabled)
         {
-            mOutputStream << feature[i] << ";";
+            int windowSize = mBlob->width() * mBlob->height();
+            for (size_t i = 0; i < feature.size(); i += windowSize)
+            {
+                float maximum = 0;
+                for (size_t j = 0; j < mBlob->width() * mBlob->height(); ++j)
+                {
+                    if (feature[i + j] > maximum)
+                    {
+                        maximum = feature[i + j];
+                    }
+                }
+                mOutputStream << maximum << ";";
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < feature.size(); ++i)
+            {
+                mOutputStream << feature[i] << ";";
+            }
         }
         mOutputStream << endl;
     }
@@ -146,8 +168,34 @@ void OutputModule::WriteImage(const string& inputFilename)
     if (mIsImageOutputEnabled || mIsXMLOutputEnabled)
     {
         // wrap blob data using cv::Mat
-        const Mat featureImage(1, mBlob->num() * mBlob->channels() * mBlob->width() * mBlob->height(),
+        Mat featureImage(1, mBlob->num() * mBlob->channels() * mBlob->width() * mBlob->height(),
             CV_32FC1, mBlob->data()->mutable_cpu_data());
+
+        if (mIsKernelMaxPoolingEnabled)
+        {
+            // kernel max pooling
+            Mat kernelMax(1, mBlob->num() * mBlob->channels(),
+                CV_32FC1, mBlob->data()->mutable_cpu_data());
+
+            int windowSize = mBlob->width() * mBlob->height();
+            for (int iChannel = 0; iChannel < mBlob->channels(); iChannel++)
+            {
+                // find max
+                float maximum = 0;
+                for (int i = 0; i < mBlob->width() * mBlob->height(); i++)
+                {
+                    float value = featureImage.at<float>(0, (iChannel * windowSize) + i);
+                    if (value > maximum)
+                    {
+                        maximum = value;
+                    }
+                }
+
+                // copy it
+                kernelMax.at<float>(0, iChannel) = maximum;
+            }
+            featureImage = kernelMax;
+        }
 
         // split images if needed
         if (mImageMaxHeight > 0 && mOutputImage.rows == mImageMaxHeight)

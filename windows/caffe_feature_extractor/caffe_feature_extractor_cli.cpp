@@ -92,6 +92,7 @@ bool isTextOutputEnabled = true;
 bool isImageOutputEnabled = false;
 bool isXmlOutputEnabled = false;
 int imageMaxHeight = 0;
+bool isKernelMaxPoolingEnabled = false;
 
 #ifdef CPU_ONLY
 int logEveryNth = 10;
@@ -210,6 +211,10 @@ bool ParseProgramArguments(int argc, char * const * const argv)
                 return false;
             }
         }
+        else if (!option.compare("-k") || !option.compare("--kernel-max-pooling"))	// Kernel max pooling
+        {
+            isKernelMaxPoolingEnabled = true;
+        }
         else
         {
             cerr << "Unknown option: " << option;
@@ -239,7 +244,7 @@ int main(int argc, char** argv)
         FeatureExtractor featureExtractor(modelFile, trainedFile, meanFile);
 
         featureExtractor.ExtractFromFileList(inputFolder, inputFileList, outputPath, blobNames,
-            isTextOutputEnabled, isImageOutputEnabled, isXmlOutputEnabled, imageMaxHeight, logEveryNth);
+            isTextOutputEnabled, isImageOutputEnabled, isXmlOutputEnabled, imageMaxHeight, logEveryNth, isKernelMaxPoolingEnabled);
     }
     else
     {

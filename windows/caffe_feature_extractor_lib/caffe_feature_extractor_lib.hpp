@@ -105,7 +105,8 @@ public:
         bool enableImageOutput = false,
         bool enableXmlOutput = false,
         int imageMaxHeight = 0,
-        int logEveryNth = 100);
+        int logEveryNth = 100,
+        bool enableKernelMaxPooling = false);
 
     /**
     * @brief Extracts features from the filenames specified in the input file (one filename per line).
@@ -130,7 +131,8 @@ public:
         bool enableImageOutput = false,
         bool enableXmlOutput = false,
         int imageMaxHeight = 0,
-        int logEveryNth = 100);
+        int logEveryNth = 100,
+        bool enableKernelMaxPooling = false);
 
 
     /**
@@ -157,7 +159,8 @@ public:
         bool enableImageOutput = false,
         bool enableXmlOutput = false,
         int imageMaxHeight = 0,
-        int logEveryNth = 100);
+        int logEveryNth = 100,
+        bool enableKernelMaxPooling = false);
 
 
     void EnableTextOutput()
@@ -217,12 +220,21 @@ public:
         return mLogEveryNth;
     }
 
+    bool IsKernelMaxPoolingEnabled()
+    {
+        return mIsKernelMaxPoolingEnabled;
+    }
+
 private:
     bool mIsTextOutputEnabled;
     bool mIsImageOutputEnabled;
     bool mIsXmlOutputEnabled;
     int mImageMaxHeight;	    // output images are split into multiple files to fit this height
     int mLogEveryNth;
+
+    bool mIsKernelMaxPoolingEnabled;    // compute maximal activation over all results of one kernel
+                                        // resulting feature dimension is equal to blob channel dimension
+                                        // (number of layer kernels)
 
     boost::shared_ptr<caffe::Net<float>> mNet;	// Caffe net used to generate and extract features from
     cv::Size mInputGeometry;					// of the first layer of the network

@@ -60,12 +60,40 @@ Mat FeatureExtractor::ExtractFeatures(const string& blobName)
     Mat featureImage(1, blob->num() * blob->channels() * blob->width() * blob->height(),
         CV_32FC1, blob->data()->mutable_cpu_data());
 
-    // when returning as a vector:
-    //const float* begin = (float*)blob->data()->cpu_data();
-    //const float* end = begin + (blob->num() * blob->channels() * blob->width() * blob->height());
-    //vector<float> feature(begin, end);
+    if (mIsKernelMaxPoolingEnabled)
+    {
+        // kernel max pooling
+        Mat kernelMax(1, blob->num() * blob->channels(),
+            CV_32FC1, blob->data()->mutable_cpu_data());
+        
+        int windowSize = blob->width() * blob->height();
+        for (int iChannel = 0; iChannel < blob->channels(); iChannel++)
+        {
+            // find max
+            float maximum = 0;
+            for (int i = 0; i < windowSize; i++)
+            {
+                float value = featureImage.at<float>(0, (iChannel * windowSize) + i);
+                if (value > maximum)
+                {
+                    maximum = value;
+                }
+            }
 
-    return featureImage;
+            // copy it
+            kernelMax.at<float>(0, iChannel) = maximum;
+        }
+        return kernelMax;
+    }
+    else
+    {
+        // when returning as a vector:
+        //const float* begin = (float*)blob->data()->cpu_data();
+        //const float* end = begin + (blob->num() * blob->channels() * blob->width() * blob->height());
+        //vector<float> feature(begin, end);
+
+        return featureImage;
+    }
 }
 
 
@@ -85,13 +113,15 @@ void FeatureExtractor::ExtractFromStream(
     bool enableImageOutput,
     bool enableXmlOutput,
     int imageMaxHeight,
-    int logEveryNth)
+    int logEveryNth,
+    bool enableKernelMaxPooling)
 {
     mIsTextOutputEnabled = enableTextOutput;
     mIsImageOutputEnabled = enableImageOutput;
     mIsXmlOutputEnabled = enableXmlOutput;
     mImageMaxHeight = imageMaxHeight;
     mLogEveryNth = logEveryNth;
+    mIsKernelMaxPoolingEnabled = enableKernelMaxPooling;
 
     LoadOutputModules(blobNames, outputPath);
 
@@ -149,7 +179,8 @@ void FeatureExtractor::ExtractFromFileList(
     bool enableImageOutput,
     bool enableXmlOutput,
     int imageMaxHeight,
-    int logEveryNth)
+    int logEveryNth,
+    bool enableKernelMaxPooling)
 {
     ifstream inputStream(inputFile);
     if (inputStream.is_open())
@@ -163,7 +194,8 @@ void FeatureExtractor::ExtractFromFileList(
             enableImageOutput,
             enableXmlOutput,
             imageMaxHeight,
-            logEveryNth);
+            logEveryNth,
+            enableKernelMaxPooling);
     }
     else
     {
@@ -182,13 +214,15 @@ void FeatureExtractor::ExtractFromFileOrFolder(
     bool enableImageOutput,
     bool enableXmlOutput,
     int imageMaxHeight,
-    int logEveryNth)
+    int logEveryNth,
+    bool enableKernelMaxPooling)
 {
     mIsTextOutputEnabled = enableTextOutput;
     mIsImageOutputEnabled = enableImageOutput;
     mIsXmlOutputEnabled = enableXmlOutput;
     mImageMaxHeight = imageMaxHeight;
     mLogEveryNth = logEveryNth;
+    mIsKernelMaxPoolingEnabled = enableKernelMaxPooling;
 
     LoadOutputModules(blobNames, outputPath);
 
@@ -365,7 +399,7 @@ void FeatureExtractor::LoadOutputModules(const string& blobNames, const string& 
     for (size_t i = 0; i < numberOfFeatures; i++)
     {
         mOutputModules.push_back(boost::make_shared<OutputModule>(mNet, fs::path(outputPath), blobNamesSeparated[i],
-            mIsTextOutputEnabled, mIsImageOutputEnabled, mIsXmlOutputEnabled, mImageMaxHeight));
+            mIsTextOutputEnabled, mIsImageOutputEnabled, mIsXmlOutputEnabled, mImageMaxHeight, mIsKernelMaxPoolingEnabled));
     }
 
     timeElapsed = ((double)getTickCount() - timeStart) / getTickFrequency();
@@ -398,25 +432,27 @@ void FeatureExtractor::Preprocess(const Mat& image, vector<Mat>* inputChannels)
         sample = image;
     }
 
-    //Mat sampleResized;
-    //if (sample.size() != mInputGeometry)
-    //{
-    //    resize(sample, sampleResized, mInputGeometry);
-    //}
-    //else
-    //{
-    //    sampleResized = sample;
-    //}
+    // TODO: beware, OpenCV resize leak
+    Mat sampleResized;
+    if (sample.size() != mInputGeometry)
+    {
+        resize(sample, sampleResized, mInputGeometry);
+    }
+    else
+    {
+        sampleResized = sample;
+    }
 
     Mat sampleFloat;
     if (mNumberOfChannels == 3)
     {
-        sample.convertTo(sampleFloat, CV_32FC3);
+        sampleResized.convertTo(sampleFloat, CV_32FC3);
     }
     else
     {
-        sample.convertTo(sampleFloat, CV_32FC1);
+        sampleResized.convertTo(sampleFloat, CV_32FC1);
     }
+
 
     Mat sampleNormalized;
     subtract(sampleFloat, mMean, sampleNormalized);

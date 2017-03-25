@@ -47,7 +47,8 @@ public:
         bool enableTextOutput = true,
         bool enableImageOutput = false,
         bool enableXmlOutput = false,
-        int numberOfImageRows = 0);
+        int numberOfImageRows = 0,
+        bool enableKernelMaxPooling = false);
 
     /**
     * @brief Close output module on destruction if user forgot to do it himself.
@@ -96,6 +97,10 @@ private:
     bool mIsImageOutputEnabled;
     bool mIsXMLOutputEnabled;
     int mImageMaxHeight;	    // 0 -> do not split the image
+
+    bool mIsKernelMaxPoolingEnabled;    // compute maximal activation over all results of one kernel
+                                        // resulting feature dimension is equal to blob channel dimension
+                                        // (number of layer kernels)
 
     boost::shared_ptr<caffe::Blob<float>> mBlob;
 
